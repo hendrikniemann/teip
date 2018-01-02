@@ -1,0 +1,35 @@
+{
+  "name": "@teip/create-types",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "author": "hendrikniemann <hendrik.niemann@kiron.ngo>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@babel/types": "^7.0.0-beta.32",
+    "graphql": "^0.11.7",
+    "lodash.flatten": "^4.4.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.32",
+    "@babel/core": "^7.0.0-beta.35",
+    "@babel/preset-env": "^7.0.0-beta.32",
+    "@babel/preset-flow": "^7.0.0-beta.32",
+    "babel-core": "^7.0.0-0",
+    "babel-jest": "^22.0.4",
+    "jest": "^22.0.4"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": 8
+          }
+        }
+      ],
+      "@babel/preset-flow"
+    ]
+  }
+}
