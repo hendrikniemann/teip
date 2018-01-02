@@ -1,0 +1,11 @@
+[ignore]
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+module.system.node.resolve_dirname=node_modules
+module.system.node.resolve_dirname=packages
