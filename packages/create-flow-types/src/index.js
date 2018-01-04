@@ -44,9 +44,9 @@ export function unionSelectionSetToTypeDefinition(
   node: G.SelectionSetNode,
 ): BabelAST {
   const union = type.getTypes();
-  const selections: Object[] = node.selections.map(selection => {
+  const selections: Array<BabelAST[] | BabelAST> = node.selections.map(selection => {
     // __typename is the only direct field selection allowed on unions and included by default
-    if (selection.kind === G.KIND.FIELD || selection.name.value === '__typename') {
+    if (selection.kind === G.Kind.FIELD || selection === '__typename') {
       return [];
     }
     if (selection.kind !== G.Kind.INLINE_FRAGMENT || !selection.typeCondition) {
@@ -63,7 +63,7 @@ export function unionSelectionSetToTypeDefinition(
     return objectSelectionSetToTypeDefinition(conditionType, selection.selectionSet);
   });
 
-  return T.unionTypeAnnotation(selections);
+  return T.unionTypeAnnotation(flatten(selections));
 }
 
 export function objectSelectionSetToTypeDefinition(
@@ -151,10 +151,11 @@ export function fieldToTypeAnnotation(
   node: G.FieldNode,
 ): BabelAST {
   const gqlType: G.GraphQLType = getFieldNodeType(parent, node);
+  debugger;
   if (gqlType instanceof G.GraphQLInputObjectType || gqlType instanceof G.GraphQLInterfaceType) {
     throw new Error('Interfaces and inputs not supported!');
   }
-  const name: { value: string } = node.alias || node.name;
+  const name = node.alias || node.name;
   return T.objectTypeProperty(T.identifier(name.value), wrapNullableAnnotation(gqlType, node));
 }
 
@@ -202,7 +203,7 @@ export function definitionToTypeDefinition(
   type: G.GraphQLSchema,
   node: G.DefinitionNode,
 ): BabelAST {
-  let definition: Object;
+  let definition: BabelAST;
   if (node.kind === G.Kind.OPERATION_DEFINITION) {
     definition = operationDefinitionToTypeDefinition(type, node);
   } else if (node.kind === G.Kind.FRAGMENT_DEFINITION) {

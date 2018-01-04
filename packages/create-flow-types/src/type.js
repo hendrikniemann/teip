@@ -30,7 +30,11 @@ export function getOperationDefinitionNodeType(
 ): G.GraphQLObjectType {
   switch (node.operation) {
     case 'query':
-      return parent.getQueryType();
+      const Query = parent.getQueryType();
+      if (!Query) {
+        throw new Error('Query operation detected but schema has no query type!');
+      }
+      return Query;
     default:
       throw new Error(`Operation type ${node.operation} is not supported!`);
   }

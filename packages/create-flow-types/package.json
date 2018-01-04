@@ -1,13 +1,16 @@
 {
-  "name": "@teip/create-types",
-  "version": "1.0.0",
-  "main": "src/index.js",
+  "name": "@teip/create-flow-types",
+  "version": "0.1.0",
+  "main": "bin/index.js",
   "author": "hendrikniemann <hendrik.niemann@kiron.ngo>",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "build": "babel src/ --out-dir bin"
+  },
   "dependencies": {
     "@babel/types": "^7.0.0-beta.32",
-    "graphql": "^0.11.7",
+    "graphql": "^0.12.3",
     "lodash.flatten": "^4.4.0"
   },
   "devDependencies": {
@@ -17,6 +20,7 @@
     "@babel/preset-flow": "^7.0.0-beta.32",
     "babel-core": "^7.0.0-0",
     "babel-jest": "^22.0.4",
+    "flow-bin": "^0.62.0",
     "jest": "^22.0.4"
   },
   "babel": {
