@@ -4,8 +4,6 @@
     "lerna": "^2.5.1"
   },
   "dependencies": {},
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": ["packages/@teip/*"],
   "private": true
 }
