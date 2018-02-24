@@ -31,9 +31,13 @@ commander
         }
         const fileContent = fs.readFileSync(path.resolve(process.cwd(), file));
 
-        const ast = parse(fileContent.toString('utf8'));
-        const generated = babelGenerator(documentToModule(ast, schema)).code;
-        fs.writeFileSync(path.resolve(process.cwd(), `${file}.flow`), generated);
+        try {
+          const ast = parse(fileContent.toString('utf8'));
+          const generated = babelGenerator(documentToModule(ast, schema)).code;
+          fs.writeFileSync(path.resolve(process.cwd(), `${file}.flow`), generated);
+        } catch (error) {
+          console.log(error);
+        }
       }
     });
   });
