@@ -4,14 +4,16 @@
   "main": "bin/index.js",
   "author": "hendrikniemann <hendrik.niemann@kiron.ngo>",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "scripts": {
     "build": "babel src/ --out-dir bin"
   },
   "dependencies": {
     "@babel/types": "^7.0.0-beta.32",
+    "@teip/wald": "^1.0.0",
     "graphql": "^0.12.3",
-    "lodash.flatten": "^4.4.0"
+    "lodash.flatten": "^4.4.0",
+    "prettier": "^1.11.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.32",
@@ -20,8 +22,10 @@
     "@babel/preset-flow": "^7.0.0-beta.32",
     "babel-core": "^7.0.0-0",
     "babel-jest": "^22.0.4",
-    "flow-bin": "^0.65.0",
-    "jest": "^22.0.4"
+    "babylon": "^6.18.0",
+    "flow-bin": "^0.66.0",
+    "jest": "^22.0.4",
+    "lerna": "^2.5.1"
   },
   "babel": {
     "presets": [

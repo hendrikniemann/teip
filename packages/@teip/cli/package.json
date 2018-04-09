@@ -15,17 +15,19 @@
   },
   "dependencies": {
     "@babel/generator": "^7.0.0-beta.36",
-    "@babel/preset-env": "^7.0.0-beta.36",
     "@teip/create-flow-types": "^0.1.0",
+    "@teip/wald": "^1.0.0",
     "commander": "^2.12.2",
     "glob": "^7.1.2",
     "graphql": "^0.12.3",
-    "graphql-config": "^1.1.4"
+    "graphql-config": "^1.1.4",
+    "prettier": "^1.11.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.36",
     "@babel/core": "^7.0.0-beta.36",
-    "flow-bin": "^0.65.0"
+    "@babel/preset-env": "^7.0.0-beta.36",
+    "flow-bin": "^0.66.0"
   },
   "babel": {
     "presets": [

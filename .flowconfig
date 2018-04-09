@@ -9,4 +9,4 @@
 
 [options]
 module.system.node.resolve_dirname=node_modules
-module.system.node.resolve_dirname=packages
+module.system.node.resolve_dirname=../../
