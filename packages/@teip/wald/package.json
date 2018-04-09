@@ -1,0 +1,39 @@
+{
+  "name": "@teip/wald",
+  "version": "1.0.0",
+  "description": "GraphQL dependency engine",
+  "main": "bin/index.js",
+  "repository": "https://github.com/hendrikniemann/teip",
+  "author": "hendrikniemann",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "babel src/ --out-dir bin"
+  },
+  "dependencies": {
+    "@teip/create-flow-types": "^0.1.0",
+    "graphql": "^0.12.3",
+    "lodash.flatmap": "^4.5.0",
+    "prettier": "^1.11.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.36",
+    "@babel/core": "^7.0.0-beta.36",
+    "@babel/preset-env": "^7.0.0-beta.36",
+    "@babel/preset-flow": "^7.0.0-beta.40",
+    "flow-bin": "^0.66.0"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": 8
+          }
+        }
+      ],
+      "@babel/preset-flow"
+    ]
+  }
+}
