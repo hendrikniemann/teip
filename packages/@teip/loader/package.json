@@ -1,0 +1,40 @@
+{
+  "name": "@teip/loader",
+  "description": "A webpack loader for GraphQL files",
+  "version": "0.1.0",
+  "main": "bin/index.js",
+  "repository": "https://github.com/hendrikniemann/teip/tree/master/packages/%40teip/loader",
+  "author": "hendrikniemann",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.44",
+    "@babel/core": "^7.0.0-beta.44",
+    "@babel/preset-env": "^7.0.0-beta.44",
+    "@babel/preset-flow": "^7.0.0-beta.44",
+    "babel-jest": "^22.4.3",
+    "flow-bin": "^0.69.0",
+    "flow-typed": "^2.4.0",
+    "jest": "^22.4.3"
+  },
+  "peerDependencies": {
+    "graphql": "^0.13.2"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": 8
+          }
+        }
+      ],
+      "@babel/preset-flow"
+    ]
+  },
+  "scripts": {
+    "build": "babel src/ --out-dir bin --ignore __test__",
+    "prepublish": "npm run build"
+  }
+}

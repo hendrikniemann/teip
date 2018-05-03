@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loader should compile a file with multiple definitions 1`] = `
+"
+
+function joinDocuments(...documents) {
+  return {
+    kind: 'Document',
+    definitions: documents.map(function (doc) {
+      return doc.definitions;
+    }).reduce(function (acc, curr) {
+      return acc.concat(curr);
+    }, [])
+  };
+}
+
+var TestFragment = {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"FragmentDefinition\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Test\\",\\"loc\\":{\\"start\\":10,\\"end\\":14}},\\"typeCondition\\":{\\"kind\\":\\"NamedType\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"World\\",\\"loc\\":{\\"start\\":18,\\"end\\":23}},\\"loc\\":{\\"start\\":18,\\"end\\":23}},\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"id\\",\\"loc\\":{\\"start\\":28,\\"end\\":30}},\\"arguments\\":[],\\"directives\\":[],\\"loc\\":{\\"start\\":28,\\"end\\":30}},{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"denomination\\",\\"loc\\":{\\"start\\":33,\\"end\\":45}},\\"arguments\\":[],\\"directives\\":[],\\"loc\\":{\\"start\\":33,\\"end\\":45}}],\\"loc\\":{\\"start\\":24,\\"end\\":47}},\\"loc\\":{\\"start\\":1,\\"end\\":47}}]};
+
+export { TestFragment };
+
+var HelloQuery = joinDocuments(TestFragment, {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"OperationDefinition\\",\\"operation\\":\\"query\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Hello\\",\\"loc\\":{\\"start\\":55,\\"end\\":60}},\\"variableDefinitions\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"world\\",\\"loc\\":{\\"start\\":65,\\"end\\":70}},\\"arguments\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"FragmentSpread\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Test\\",\\"loc\\":{\\"start\\":80,\\"end\\":84}},\\"directives\\":[],\\"loc\\":{\\"start\\":77,\\"end\\":84}}],\\"loc\\":{\\"start\\":71,\\"end\\":88}},\\"loc\\":{\\"start\\":65,\\"end\\":88}}],\\"loc\\":{\\"start\\":61,\\"end\\":90}},\\"loc\\":{\\"start\\":49,\\"end\\":90}}]});
+
+export { HelloQuery };
+"
+`;
+
+exports[`loader should compile a simple file 1`] = `
+"import { TestFragment } from './test.graphql';
+
+function joinDocuments(...documents) {
+  return {
+    kind: 'Document',
+    definitions: documents.map(function (doc) {
+      return doc.definitions;
+    }).reduce(function (acc, curr) {
+      return acc.concat(curr);
+    }, [])
+  };
+}
+
+var HelloQuery = joinDocuments(TestFragment, {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"OperationDefinition\\",\\"operation\\":\\"query\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Hello\\",\\"loc\\":{\\"start\\":47,\\"end\\":52}},\\"variableDefinitions\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"world\\",\\"loc\\":{\\"start\\":57,\\"end\\":62}},\\"arguments\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"FragmentSpread\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Test\\",\\"loc\\":{\\"start\\":72,\\"end\\":76}},\\"directives\\":[],\\"loc\\":{\\"start\\":69,\\"end\\":76}}],\\"loc\\":{\\"start\\":63,\\"end\\":80}},\\"loc\\":{\\"start\\":57,\\"end\\":80}}],\\"loc\\":{\\"start\\":53,\\"end\\":82}},\\"loc\\":{\\"start\\":41,\\"end\\":82}}]});
+
+export { HelloQuery };
+"
+`;
+
+exports[`loader should transpile files with malformed imports 1`] = `
+"
+
+function joinDocuments(...documents) {
+  return {
+    kind: 'Document',
+    definitions: documents.map(function (doc) {
+      return doc.definitions;
+    }).reduce(function (acc, curr) {
+      return acc.concat(curr);
+    }, [])
+  };
+}
+
+var TransferShortListQuery = joinDocuments(TransferShortListListFragment, TransferShortListUserFragment, {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"OperationDefinition\\",\\"operation\\":\\"query\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"TransferShortList\\",\\"loc\\":{\\"start\\":66,\\"end\\":83}},\\"variableDefinitions\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"transferChecklist\\",\\"loc\\":{\\"start\\":88,\\"end\\":105}},\\"arguments\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"FragmentSpread\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"TransferShortListList\\",\\"loc\\":{\\"start\\":115,\\"end\\":136}},\\"directives\\":[],\\"loc\\":{\\"start\\":112,\\"end\\":136}}],\\"loc\\":{\\"start\\":106,\\"end\\":140}},\\"loc\\":{\\"start\\":88,\\"end\\":140}},{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"me\\",\\"loc\\":{\\"start\\":143,\\"end\\":145}},\\"arguments\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"FragmentSpread\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"TransferShortListUser\\",\\"loc\\":{\\"start\\":155,\\"end\\":176}},\\"directives\\":[],\\"loc\\":{\\"start\\":152,\\"end\\":176}}],\\"loc\\":{\\"start\\":146,\\"end\\":180}},\\"loc\\":{\\"start\\":143,\\"end\\":180}}],\\"loc\\":{\\"start\\":84,\\"end\\":182}},\\"loc\\":{\\"start\\":60,\\"end\\":182}}]});
+
+export { TransferShortListQuery };
+"
+`;
+
+exports[`loader should transpile files with mutations 1`] = `
+"
+
+function joinDocuments(...documents) {
+  return {
+    kind: 'Document',
+    definitions: documents.map(function (doc) {
+      return doc.definitions;
+    }).reduce(function (acc, curr) {
+      return acc.concat(curr);
+    }, [])
+  };
+}
+
+var doSomethingMutation = {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"OperationDefinition\\",\\"operation\\":\\"mutation\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"doSomething\\",\\"loc\\":{\\"start\\":69,\\"end\\":80}},\\"variableDefinitions\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"doSomething\\",\\"loc\\":{\\"start\\":85,\\"end\\":96}},\\"arguments\\":[{\\"kind\\":\\"Argument\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"what\\",\\"loc\\":{\\"start\\":97,\\"end\\":101}},\\"value\\":{\\"kind\\":\\"StringValue\\",\\"value\\":\\"Something\\",\\"block\\":false,\\"loc\\":{\\"start\\":103,\\"end\\":114}},\\"loc\\":{\\"start\\":97,\\"end\\":114}}],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"xyz\\",\\"loc\\":{\\"start\\":122,\\"end\\":125}},\\"arguments\\":[],\\"directives\\":[],\\"loc\\":{\\"start\\":122,\\"end\\":125}}],\\"loc\\":{\\"start\\":116,\\"end\\":129}},\\"loc\\":{\\"start\\":85,\\"end\\":129}}],\\"loc\\":{\\"start\\":81,\\"end\\":131}},\\"loc\\":{\\"start\\":60,\\"end\\":131}}]};
+
+export { doSomethingMutation };
+"
+`;
