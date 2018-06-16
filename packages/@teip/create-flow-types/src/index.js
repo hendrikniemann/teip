@@ -49,7 +49,7 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
     const union = type.getTypes();
     const selections: Array<BabelAST[] | BabelAST> = node.selections.map(selection => {
       // __typename is the only direct field selection allowed on unions and included by default
-      if (selection.kind === G.Kind.FIELD || selection === '__typename') {
+      if (selection.kind === G.Kind.FIELD && selection === '__typename') {
         return [];
       }
       if (selection.kind !== G.Kind.INLINE_FRAGMENT || !selection.typeCondition) {
