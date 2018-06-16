@@ -3,7 +3,15 @@ import { parse } from 'babylon';
 import * as T from '@babel/types';
 import { mergeObjectTypes } from '../util';
 
-const parseApplied = (exp: string) => parse(exp, { plugins: ['flow'] });
+/*::
+// Unfortunately Babel does not export the types yet...
+const someObjectType = T.objectTypeAnnotation([]);
+type BabelNodeObjectTypeAnnotation = typeof someObjectType;
+*/
+
+function parseApplied(exp: string): BabelNodeObjectTypeAnnotation {
+  return parse(exp, { plugins: ['flow'] }).program.body[0].right;
+}
 
 function expectProperty(prop, propName, typeName) {
   expect(prop).toHaveProperty('value.type', typeName);
@@ -12,8 +20,8 @@ function expectProperty(prop, propName, typeName) {
 
 describe('mergeObjectTypes', () => {
   it('should merge simple object types', () => {
-    const typeA = parseApplied('type TypeA = { a: string }').program.body[0].right;
-    const typeB = parseApplied('type TypeB = { b: number }').program.body[0].right;
+    const typeA = parseApplied('type TypeA = { a: string }');
+    const typeB = parseApplied('type TypeB = { b: number }');
     const result = mergeObjectTypes(typeA, typeB);
 
     expect(result.properties.length).toBe(2);
@@ -22,8 +30,8 @@ describe('mergeObjectTypes', () => {
   });
 
   it('should not dublicate properties if the occurr in both types', () => {
-    const typeA = parseApplied('type TypeA = { a: string }').program.body[0].right;
-    const typeB = parseApplied('type TypeB = { a: string }').program.body[0].right;
+    const typeA = parseApplied('type TypeA = { a: string }');
+    const typeB = parseApplied('type TypeB = { a: string }');
     const result = mergeObjectTypes(typeA, typeB);
 
     expect(result.properties.length).toBe(1);
@@ -31,14 +39,14 @@ describe('mergeObjectTypes', () => {
   });
 
   it('should merge bigger objects', () => {
-    const typeA = parseApplied('type TypeA = { a: string, b: boolean }').program.body[0].right;
+    const typeA = parseApplied('type TypeA = { a: string, b: boolean }');
     const typeB = parseApplied(`
       type TypeB = {
         c: number,
         d: void,
         e: { x: number },
       }
-    `).program.body[0].right;
+    `);
     const result = mergeObjectTypes(typeA, typeB);
 
     expect(result.properties.length).toBe(5);
@@ -50,8 +58,8 @@ describe('mergeObjectTypes', () => {
   });
 
   it('should merge properties recursively if conflicting properties are both object types', () => {
-    const typeA = parseApplied('type TypeA = { a: { a: string } }').program.body[0].right;
-    const typeB = parseApplied('type TypeB = { a: { b: number } }').program.body[0].right;
+    const typeA = parseApplied('type TypeA = { a: { a: string } }');
+    const typeB = parseApplied('type TypeB = { a: { b: number } }');
     const result = mergeObjectTypes(typeA, typeB);
 
     expect(result.properties.length).toBe(1);
@@ -63,16 +71,16 @@ describe('mergeObjectTypes', () => {
   });
 
   it('should throw on type conflicts', () => {
-    const typeA = parseApplied('type TypeA = { a: string }').program.body[0].right;
-    const typeB = parseApplied('type TypeB = { a: number }').program.body[0].right;
+    const typeA = parseApplied('type TypeA = { a: string }');
+    const typeB = parseApplied('type TypeB = { a: number }');
     expect(() => {
       mergeObjectTypes(typeA, typeB);
     }).toThrowError();
   });
 
   it('should merge empty objects', () => {
-    const typeA = parseApplied('type TypeA = { a: string }').program.body[0].right;
-    const typeB = parseApplied('type TypeB = {}').program.body[0].right;
+    const typeA = parseApplied('type TypeA = { a: string }');
+    const typeB = parseApplied('type TypeB = {}');
     const result = mergeObjectTypes(typeA, typeB);
 
     expect(result.properties.length).toBe(1);
@@ -80,8 +88,8 @@ describe('mergeObjectTypes', () => {
   });
 
   it('should merge subproperties if both are arrays of objects', () => {
-    const typeA = parseApplied('type TypeA = { a: { a: string }[] }').program.body[0].right;
-    const typeB = parseApplied('type TypeB = { a: { b: number }[] }').program.body[0].right;
+    const typeA = parseApplied('type TypeA = { a: { a: string }[] }');
+    const typeB = parseApplied('type TypeB = { a: { b: number }[] }');
     const result = mergeObjectTypes(typeA, typeB);
 
     expect(result.properties.length).toBe(1);

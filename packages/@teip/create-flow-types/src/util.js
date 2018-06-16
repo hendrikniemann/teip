@@ -2,11 +2,13 @@
 import * as T from '@babel/types';
 import flatten from 'lodash.flatten';
 
+/*::
 // Hack to extract the Babel internal types
 const tOTP = T.objectTypeProperty(T.identifier('str'), T.nullLiteralTypeAnnotation());
 const tOTA = T.objectTypeAnnotation([tOTP]);
 type BabelNodeObjectTypeProperty = typeof tOTP;
 type BabelNodeObjectTypeAnnotation = typeof tOTA;
+*/
 
 const isArrayOfObjectAnnotation = node =>
   // $FlowFixMe

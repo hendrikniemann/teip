@@ -79,6 +79,10 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
     const fragments = [];
     const selections: Array<*> = node.selections.map(selection => {
       if (selection.kind === G.Kind.FIELD) {
+        // we will add typename later in this function and should therefore not include it here
+        if (selection.name.value === '__typename') {
+          return [];
+        }
         return fieldToTypeAnnotation(type, selection, file);
       } else if (selection.kind === G.Kind.FRAGMENT_SPREAD) {
         fragments.push(selection.name.value);
@@ -88,6 +92,15 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
       }
       throw new Error(`Unknown selection of kind ${selection.kind}`);
     });
+
+    // Always add __typename as the first property
+    selections.unshift([
+      T.objectTypeProperty(
+        T.identifier('__typename'),
+        T.stringLiteralTypeAnnotation(type.name),
+        T.variance('plus'),
+      ),
+    ]);
 
     return mergeObjectTypes(
       T.objectTypeAnnotation(flatten(selections)),
@@ -155,6 +168,8 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
       return listToTypeAnnotation(type, node, file);
     } else if (type instanceof G.GraphQLUnionType) {
       return unionToTypeAnnotation(type, node, file);
+    } else if (type instanceof G.GraphQLInterfaceType) {
+      throw new Error('`typeToTypeAnnotation` does not support interfaces yet :(');
     } else if (type instanceof G.GraphQLNonNull) {
       throw new Error('`typeToTypeAnnotation` should not be called with GraphQLNonNull!');
     }
@@ -171,6 +186,9 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
     node: G.FieldNode,
     file: string,
   ) {
+    if (node.name.value === '__typename') {
+      throw new Error('`fieldToTypeAnnotation` cannot be called with "__typename".');
+    }
     const gqlType: G.GraphQLType = getFieldNodeType(parent, node);
     if (gqlType instanceof G.GraphQLInputObjectType || gqlType instanceof G.GraphQLInterfaceType) {
       throw new Error('Interfaces and inputs not supported!');
