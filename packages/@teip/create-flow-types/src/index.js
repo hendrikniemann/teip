@@ -104,7 +104,10 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
    * Converts a GraphQL list type into the AST of a Flow array type annotation.
    */
   function listToTypeAnnotation(type: G.GraphQLList<*>, node: G.FieldNode, file: string) {
-    return T.arrayTypeAnnotation(wrapNullableAnnotation(type.ofType, node, file));
+    return T.genericTypeAnnotation(
+      T.identifier('$ReadOnlyArray'),
+      T.typeParameterInstantiation([wrapNullableAnnotation(type.ofType, node, file)]),
+    );
   }
 
   /**
@@ -176,6 +179,7 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
     return T.objectTypeProperty(
       T.identifier(name.value),
       wrapNullableAnnotation(gqlType, node, file),
+      T.variance('plus'),
     );
   }
 
@@ -205,15 +209,14 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
         undefined,
         objectSelectionSetToTypeDefinition(type, node.selectionSet, entryFile),
       );
+    } else if (node.operation === 'mutation') {
+      const id = node.name ? `${node.name.value}MutationType` : 'MutationType';
+      return T.typeAlias(
+        T.identifier(id),
+        undefined,
+        objectSelectionSetToTypeDefinition(type, node.selectionSet),
+      );
     }
-    //  else if (node.operation === 'mutation') {
-    //   const id = node.name ? `${node.name.value}MutationType` : 'MutationType';
-    //   return T.typeAlias(
-    //     T.identifier(id),
-    //     undefined,
-    //     objectSelectionSetToTypeDefinition(type, node.selectionSet),
-    //   );
-    // }
     throw new Error(`Operation ${node.operation} not supported`);
   }
 

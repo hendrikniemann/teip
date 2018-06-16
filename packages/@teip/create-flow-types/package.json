@@ -9,9 +9,8 @@
     "build": "babel src/ --out-dir bin"
   },
   "dependencies": {
-    "@babel/types": "^7.0.0-beta.32",
+    "@babel/types": "^7.0.0-beta.49",
     "@teip/wald": "^1.0.0",
-    "graphql": "^0.12.3",
     "lodash.flatten": "^4.4.0",
     "prettier": "^1.11.1"
   },
@@ -38,6 +37,12 @@
         }
       ],
       "@babel/preset-flow"
+    ]
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "<rootDir>/bin/",
+      "<rootDir>/node_modules/"
     ]
   }
 }

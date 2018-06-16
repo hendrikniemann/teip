@@ -2,3 +2,5 @@
 **/bin/
 .DS_Store
 lerna-debug.log
+yarn-debug.log
+yarn-error.log

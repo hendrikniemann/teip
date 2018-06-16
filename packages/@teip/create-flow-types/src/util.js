@@ -8,6 +8,15 @@ const tOTA = T.objectTypeAnnotation([tOTP]);
 type BabelNodeObjectTypeProperty = typeof tOTP;
 type BabelNodeObjectTypeAnnotation = typeof tOTA;
 
+const isArrayOfObjectAnnotation = node =>
+  // $FlowFixMe
+  T.isArrayTypeAnnotation(node) && T.isObjectTypeAnnotation(node.elementType);
+
+const isReadOnlyArrayOfObjectAnnotation = node =>
+  T.isGenericTypeAnnotation(node) &&
+  node.id.name === '$ReadOnlyArray' &&
+  node.typeParameters.params.every(T.isObjectTypeAnnotation);
+
 /**
  * This function merges two object types and makes the following assertions doing so in the context
  * of GraphQL type generation:
@@ -37,6 +46,39 @@ export function mergeObjectTypes(
         propertyMap.set(
           property.key.name,
           T.objectTypeProperty(T.clone(existing.key), newValue, T.variance('plus')),
+        );
+      } else if (
+        isArrayOfObjectAnnotation(existing.value) &&
+        isArrayOfObjectAnnotation(property.value)
+      ) {
+        // $FlowFixMe % checks not really working yet...
+        const newValue = mergeObjectTypes(existing.value.elementType, property.value.elementType);
+        propertyMap.set(
+          property.key.name,
+          T.objectTypeProperty(
+            T.clone(existing.key),
+            T.arrayTypeAnnotation(newValue),
+            T.variance('plus'),
+          ),
+        );
+      } else if (
+        isReadOnlyArrayOfObjectAnnotation(existing.value) &&
+        isReadOnlyArrayOfObjectAnnotation(property.value)
+      ) {
+        const newValue = mergeObjectTypes(
+          existing.value.typeParameters.params[0],
+          property.value.typeParameters.params[0],
+        );
+        propertyMap.set(
+          property.key.name,
+          T.objectTypeProperty(
+            T.clone(existing.key),
+            T.genericTypeAnnotation(
+              T.identifier('$ReadOnlyArray'),
+              T.typeParameterInstantiation([newValue]),
+            ),
+            T.variance('plus'),
+          ),
         );
       }
       // Nothing else to do here since the type is correct already

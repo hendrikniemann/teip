@@ -78,4 +78,37 @@ describe('mergeObjectTypes', () => {
     expect(result.properties.length).toBe(1);
     expectProperty(result.properties[0], 'a', 'StringTypeAnnotation');
   });
+
+  it('should merge subproperties if both are arrays of objects', () => {
+    const typeA = parseApplied('type TypeA = { a: { a: string }[] }').program.body[0].right;
+    const typeB = parseApplied('type TypeB = { a: { b: number }[] }').program.body[0].right;
+    const result = mergeObjectTypes(typeA, typeB);
+
+    expect(result.properties.length).toBe(1);
+    expectProperty(result.properties[0], 'a', 'ArrayTypeAnnotation');
+    const child = result.properties[0].value.elementType;
+    expect(child.properties.length).toBe(2);
+    expectProperty(child.properties[0], 'a', 'StringTypeAnnotation');
+    expectProperty(child.properties[1], 'b', 'NumberTypeAnnotation');
+  });
+
+  it('should merge subproperties if both are read only arrays of objects', () => {
+    const typeA = parseApplied('type TypeA = { a: $ReadOnlyArray<{ a: string }> }').program.body[0]
+      .right;
+    const typeB = parseApplied('type TypeB = { a: $ReadOnlyArray<{ b: number }> }').program.body[0]
+      .right;
+    const result = mergeObjectTypes(typeA, typeB);
+
+    expect(result.properties.length).toBe(1);
+    expectProperty(result.properties[0], 'a', 'GenericTypeAnnotation');
+
+    const { typeParameters } = result.properties[0].value;
+    expect(typeParameters.type).toBe('TypeParameterInstantiation');
+    expect(typeParameters.params.length).toBe(1);
+
+    const child = typeParameters.params[0];
+    expect(child.properties.length).toBe(2);
+    expectProperty(child.properties[0], 'a', 'StringTypeAnnotation');
+    expectProperty(child.properties[1], 'b', 'NumberTypeAnnotation');
+  });
 });
