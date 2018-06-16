@@ -9,6 +9,7 @@ import {
   type OperationDefinitionNode,
 } from 'graphql';
 import { promisify } from 'util';
+import { isImport, importToImportInfo } from '@teip/utils';
 
 type DefinitionNode = FragmentDefinitionNode | OperationDefinitionNode;
 
@@ -27,25 +28,27 @@ type WaldFile = {
 
 type PathMap = Map<string, WaldFile | 'pending'>;
 
-const importRegex = /^#\s*import\s+([a-zA-Z]+)\s+from\s+("[^"]+"|'[^']+')$/;
-const testRegex = (str: string) => str.match(importRegex);
-
 function readImports(filePath: string, content: string): [string, WaldImport[]] {
   const lines = content.split('\n');
-  const lastImport = lines.findIndex(line => !importRegex.test(line));
+  const lastImport = lines.findIndex(line => !isImport(line));
 
   const imports = lines.slice(0, lastImport);
   const strippedContent = lines.slice(lastImport).join('\n');
 
-  const references = imports.map(imp => imp.match(importRegex)).map(([all, name, file]) => ({
-    name,
-    filePath: path.join(path.dirname(filePath), file.substring(1, file.length - 1)),
-  }));
+  const references = imports
+    .map(importToImportInfo)
+    .map(importInfo =>
+      importInfo.names.map((name: string) => ({
+        name,
+        filePath: path.join(path.dirname(filePath), importInfo.path),
+      })),
+    )
+    .reduce((p: Array<*>, n) => p.concat(n), []);
 
   return [strippedContent, references];
 }
 
-function resolveFile(filePath: string): Promise<GraphQLFile> {
+function resolveFile(filePath: string): Promise<WaldFile> {
   return readFile(filePath, 'utf-8').then(content => {
     const [strippedContent, references] = readImports(filePath, content);
     const { definitions } = parse(strippedContent);
