@@ -28,6 +28,10 @@ type WaldFile = {
 
 type PathMap = Map<string, WaldFile | 'pending'>;
 
+function defaultResolve(filePath: string, importPath: string): string {
+  return path.join(path.dirname(filePath), importPath);
+}
+
 function readImports(filePath: string, content: string): [string, WaldImport[]] {
   const lines = content.split('\n');
   const lastImport = lines.findIndex(line => !isImport(line));
@@ -40,7 +44,7 @@ function readImports(filePath: string, content: string): [string, WaldImport[]] 
     .map(importInfo =>
       importInfo.names.map((name: string) => ({
         name,
-        filePath: path.join(path.dirname(filePath), importInfo.path),
+        filePath: defaultResolve(filePath, importInfo.path),
       })),
     )
     .reduce((p: Array<*>, n) => p.concat(n), []);
@@ -48,7 +52,7 @@ function readImports(filePath: string, content: string): [string, WaldImport[]] 
   return [strippedContent, references];
 }
 
-function resolveFile(filePath: string): Promise<WaldFile> {
+export function resolveFile(filePath: string): Promise<WaldFile> {
   return readFile(filePath, 'utf-8').then(content => {
     const [strippedContent, references] = readImports(filePath, content);
     const { definitions } = parse(strippedContent);
@@ -77,7 +81,7 @@ export function resolveName(
   pathMap: PathMap,
   name: string,
   file: string,
-): { definition: FragmentDefinitionNode, file: string } {
+): { definition: DefinitionNode, file: string } {
   const fileTree = pathMap.get(file);
   if (!fileTree) {
     throw new Error(`File "${file}" could not be found in the pathMap`);
@@ -86,7 +90,9 @@ export function resolveName(
     throw new Error('The path map is still being build asyncroniously');
   }
 
-  const definition: ?DefinitionNode = fileTree.definitions.find(def => def.name.value === name);
+  const definition: ?DefinitionNode = fileTree.definitions.find(
+    def => def.name && def.name.value === name,
+  );
   if (definition) {
     return { definition, file };
   }
@@ -104,8 +110,8 @@ export function resolveFragmentName(
   file: string,
 ): { definition: FragmentDefinitionNode, file: string } {
   const res = resolveName(pathMap, name, file);
-  if (res.definition.kind !== 'FragmentDefinition') {
-    throw new Error('Found name "${name}" in file but it was not a fragment definition');
+  if (res.definition.kind === 'FragmentDefinition') {
+    return res;
   }
-  return res;
+  throw new Error('Found name "${name}" in file but it was not a fragment definition');
 }
