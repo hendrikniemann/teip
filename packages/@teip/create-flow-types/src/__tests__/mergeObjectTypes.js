@@ -101,10 +101,8 @@ describe('mergeObjectTypes', () => {
   });
 
   it('should merge subproperties if both are read only arrays of objects', () => {
-    const typeA = parseApplied('type TypeA = { a: $ReadOnlyArray<{ a: string }> }').program.body[0]
-      .right;
-    const typeB = parseApplied('type TypeB = { a: $ReadOnlyArray<{ b: number }> }').program.body[0]
-      .right;
+    const typeA = parseApplied('type TypeA = { a: $ReadOnlyArray<{ a: string }> }');
+    const typeB = parseApplied('type TypeB = { a: $ReadOnlyArray<{ b: number }> }');
     const result = mergeObjectTypes(typeA, typeB);
 
     expect(result.properties.length).toBe(1);
