@@ -8,7 +8,8 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "build": "babel src/ --out-dir bin"
+    "build": "babel src/ --out-dir bin",
+    "prepublish": "npm run build"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.36",

@@ -33,7 +33,7 @@ export const importRegex = /^#\s*import\s*{\s*((?:[_A-Za-z][_0-9A-Za-z]*\s*,\s*)
 
 export const isImport = (str: string): boolean => importRegex.test(str);
 
-type ImportInfo = {
+export type ImportInfo = {
   path: string,
   names: string[],
 };
