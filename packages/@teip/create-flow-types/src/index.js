@@ -3,6 +3,7 @@ import * as G from 'graphql';
 import * as T from '@babel/types';
 import flatten from 'lodash.flatten';
 import { resolveFragmentName } from '@teip/wald';
+import { definitionToVariableName } from '@teip/utils';
 import {
   getOperationDefinitionNodeType,
   getFieldNodeType,
@@ -41,6 +42,9 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
     return T.unionTypeAnnotation(values);
   }
 
+  /**
+   * Creates a Flow type definitions for a union's subselection.
+   */
   function unionSelectionSetToTypeDefinition(
     type: G.GraphQLUnionType,
     node: G.SelectionSetNode,
@@ -69,6 +73,44 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
     });
 
     return T.unionTypeAnnotation(flatten(selections));
+  }
+
+  /**
+   * Creates a Flow type annotation for an interface's subselection.
+   */
+  function interfaceSelectionSetToTypeDefinition(
+    type: G.GraphQLInterfaceType,
+    node: G.SelectionSetNode,
+    file: string,
+  ) {
+    const inlineFragments = node.selections
+      .filter(selection => selection.kind === G.Kind.INLINE_FRAGMENT)
+      .map((selection: G.InlineFragmentNode) => {
+        const conditionTypeName: string = selection.typeCondition.name.value;
+        const conditionType: ?G.GraphQLObjectType = schema.getType(conditionTypeName);
+        if (!conditionType) {
+          throw new Error(`Type ${conditionTypeName} does not exist in schema.`);
+        }
+        if (!conditionType.getInterfaces().includes(type)) {
+          throw new Error(`Type ${conditionTypeName} does not implement interface ${parent.name}.`);
+        }
+
+        return objectSelectionSetToTypeDefinition(conditionType, selection.selectionSet, file);
+      });
+
+    const x = objectSelectionSetToTypeDefinition(
+      type,
+      {
+        selections: node.selections.filter(selection => selection.kind !== G.Kind.INLINE_FRAGMENT),
+      },
+      file,
+    );
+
+    if (inlineFragments.length === 0) {
+      return x;
+    }
+
+    return T.unionTypeAnnotation(inlineFragments.map(fragment => mergeObjectTypes(fragment, x)));
   }
 
   function objectSelectionSetToTypeDefinition(
@@ -155,6 +197,21 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
   }
 
   /**
+   * Interfaces are probably the most tricky types with subselections. Also here we delegate to the
+   * function that does the subselection for us.
+   */
+  function interfaceToTypeAnnotation(
+    type: G.GraphQLInterfaceType,
+    node: G.FieldNode,
+    file: string,
+  ) {
+    if (!node.selectionSet) {
+      throw new Error('Interface types need subselections!');
+    }
+    return interfaceSelectionSetToTypeDefinition(type, node.selectionSet, file);
+  }
+
+  /**
    * Converts any GraphQL type into the AST of a Flow type annotation.
    */
   function typeToTypeAnnotation(type: G.GraphQLOutputType, node: G.FieldNode, file: string) {
@@ -169,7 +226,7 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
     } else if (type instanceof G.GraphQLUnionType) {
       return unionToTypeAnnotation(type, node, file);
     } else if (type instanceof G.GraphQLInterfaceType) {
-      throw new Error('`typeToTypeAnnotation` does not support interfaces yet :(');
+      return interfaceToTypeAnnotation(type, node, file);
     } else if (type instanceof G.GraphQLNonNull) {
       throw new Error('`typeToTypeAnnotation` should not be called with GraphQLNonNull!');
     }
@@ -208,6 +265,8 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
       selectionAnnotation = unionSelectionSetToTypeDefinition(type, node.selectionSet, file);
     } else if (type instanceof G.GraphQLObjectType) {
       selectionAnnotation = objectSelectionSetToTypeDefinition(type, node.selectionSet, file);
+    } else if (type instanceof G.GraphQLInterfaceType) {
+      selectionAnnotation = interfaceSelectionSetToTypeDefinition(type, node.selectionSet, file);
     } else {
       throw new TypeError(`Fragment ${type.name} was defined on type that cannot be fragmented!`);
     }
@@ -232,7 +291,7 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
       return T.typeAlias(
         T.identifier(id),
         undefined,
-        objectSelectionSetToTypeDefinition(type, node.selectionSet),
+        objectSelectionSetToTypeDefinition(type, node.selectionSet, entryFile),
       );
     }
     throw new Error(`Operation ${node.operation} not supported`);
@@ -260,29 +319,15 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
     definitionToTypeDefinition(definition, entryFile),
   );
 
-  const exportStatments = fileTree.definitions.map(
-    (definition: G.FragmentDefinitionNode | G.OperationDefinitionNode) => {
-      let name = 'UnknownDefinition';
-      if (definition.kind === 'FragmentDefinition') {
-        name = `${definition.name.value}Fragment`;
-      }
-      if (definition.kind === 'OperationDefinition') {
-        if (definition.operation === 'query') {
-          name = `${definition.name.value}Query`;
-        } else if (definition.operation === 'mutation') {
-          name = `${definition.name.value}Mutation`;
-        }
-      }
-      return T.declareExportDeclaration(
-        T.declareVariable(
-          T.identifier(
-            name,
-            T.typeAnnotation(T.genericTypeAnnotation(T.identifier('DefinitionNode'))),
-          ),
-        ),
-      );
-    },
-  );
+  const exportStatments = fileTree.definitions.map((definition: G.DefinitionNode) => {
+    let name = definitionToVariableName(definition);
+
+    const id = T.identifier(name);
+    Object.assign(id, {
+      typeAnnotation: T.typeAnnotation(T.genericTypeAnnotation(T.identifier('DefinitionNode'))),
+    });
+    return T.declareExportDeclaration(T.declareVariable(id));
+  });
 
   return T.file(T.program(typeExportStatements.concat(exportStatments)));
 }

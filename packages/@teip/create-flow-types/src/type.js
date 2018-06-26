@@ -32,11 +32,17 @@ export function getOperationDefinitionNodeType(
     case 'query':
       const Query = parent.getQueryType();
       if (!Query) {
-        throw new Error('Query operation detected but schema has no query type!');
+        throw new Error('Query operation detected but schema has no query type.');
       }
       return Query;
+    case 'mutation':
+      const Mutation = parent.getMutationType();
+      if (!Mutation) {
+        throw new Error('Found mutation operation but schema does not define mutation root type.');
+      }
+      return Mutation;
     default:
-      throw new Error(`Operation type ${node.operation} is not supported!`);
+      throw new Error(`Operation type ${node.operation} is not supported.`);
   }
 }
 

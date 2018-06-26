@@ -2,7 +2,7 @@
 .*/bin/
 
 [untyped]
-.*/babel/.*
+.*/node_modules/@babel/types
 
 [include]
 
