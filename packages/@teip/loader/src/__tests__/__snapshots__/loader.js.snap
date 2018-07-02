@@ -4,13 +4,20 @@ exports[`loader should compile a file with multiple definitions 1`] = `
 "
 
 function joinDocuments(...documents) {
+  var definitions, i, k;
+  definitions = [];
+
+  for (i = 0; i < documents.length; i++) {
+    for (k = 0; k < documents[i].definitions.length; k++) {
+      if (!definitions.some(def => def === documents[i].definitions[k])) {
+        definitions.push(documents[i].definitions[k]);
+      }
+    }
+  }
+
   return {
     kind: 'Document',
-    definitions: documents.map(function (doc) {
-      return doc.definitions;
-    }).reduce(function (acc, curr) {
-      return acc.concat(curr);
-    }, [])
+    definitions
   };
 }
 
@@ -18,7 +25,7 @@ var TestFragment = {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"
 
 export { TestFragment };
 
-var HelloQuery = joinDocuments(TestFragment, {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"OperationDefinition\\",\\"operation\\":\\"query\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Hello\\",\\"loc\\":{\\"start\\":55,\\"end\\":60}},\\"variableDefinitions\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"world\\",\\"loc\\":{\\"start\\":65,\\"end\\":70}},\\"arguments\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"FragmentSpread\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Test\\",\\"loc\\":{\\"start\\":80,\\"end\\":84}},\\"directives\\":[],\\"loc\\":{\\"start\\":77,\\"end\\":84}}],\\"loc\\":{\\"start\\":71,\\"end\\":88}},\\"loc\\":{\\"start\\":65,\\"end\\":88}}],\\"loc\\":{\\"start\\":61,\\"end\\":90}},\\"loc\\":{\\"start\\":49,\\"end\\":90}}]});
+var HelloQuery = joinDocuments(TestFragment, {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"OperationDefinition\\",\\"operation\\":\\"query\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Hello\\",\\"loc\\":{\\"start\\":55,\\"end\\":60}},\\"variableDefinitions\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"world\\",\\"loc\\":{\\"start\\":65,\\"end\\":70}},\\"arguments\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"FragmentSpread\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Test\\",\\"loc\\":{\\"start\\":80,\\"end\\":84}},\\"directives\\":[],\\"loc\\":{\\"start\\":77,\\"end\\":84}}],\\"loc\\":{\\"start\\":71,\\"end\\":88}},\\"loc\\":{\\"start\\":65,\\"end\\":88}}],\\"loc\\":{\\"start\\":61,\\"end\\":90}},\\"loc\\":{\\"start\\":49,\\"end\\":90}}]});;
 
 export { HelloQuery };
 "
@@ -28,17 +35,24 @@ exports[`loader should compile a simple file 1`] = `
 "import { TestFragment } from './test.graphql';
 
 function joinDocuments(...documents) {
+  var definitions, i, k;
+  definitions = [];
+
+  for (i = 0; i < documents.length; i++) {
+    for (k = 0; k < documents[i].definitions.length; k++) {
+      if (!definitions.some(def => def === documents[i].definitions[k])) {
+        definitions.push(documents[i].definitions[k]);
+      }
+    }
+  }
+
   return {
     kind: 'Document',
-    definitions: documents.map(function (doc) {
-      return doc.definitions;
-    }).reduce(function (acc, curr) {
-      return acc.concat(curr);
-    }, [])
+    definitions
   };
 }
 
-var HelloQuery = joinDocuments(TestFragment, {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"OperationDefinition\\",\\"operation\\":\\"query\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Hello\\",\\"loc\\":{\\"start\\":47,\\"end\\":52}},\\"variableDefinitions\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"world\\",\\"loc\\":{\\"start\\":57,\\"end\\":62}},\\"arguments\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"FragmentSpread\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Test\\",\\"loc\\":{\\"start\\":72,\\"end\\":76}},\\"directives\\":[],\\"loc\\":{\\"start\\":69,\\"end\\":76}}],\\"loc\\":{\\"start\\":63,\\"end\\":80}},\\"loc\\":{\\"start\\":57,\\"end\\":80}}],\\"loc\\":{\\"start\\":53,\\"end\\":82}},\\"loc\\":{\\"start\\":41,\\"end\\":82}}]});
+var HelloQuery = joinDocuments(TestFragment, {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"OperationDefinition\\",\\"operation\\":\\"query\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Hello\\",\\"loc\\":{\\"start\\":47,\\"end\\":52}},\\"variableDefinitions\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"world\\",\\"loc\\":{\\"start\\":57,\\"end\\":62}},\\"arguments\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"FragmentSpread\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"Test\\",\\"loc\\":{\\"start\\":72,\\"end\\":76}},\\"directives\\":[],\\"loc\\":{\\"start\\":69,\\"end\\":76}}],\\"loc\\":{\\"start\\":63,\\"end\\":80}},\\"loc\\":{\\"start\\":57,\\"end\\":80}}],\\"loc\\":{\\"start\\":53,\\"end\\":82}},\\"loc\\":{\\"start\\":41,\\"end\\":82}}]});;
 
 export { HelloQuery };
 "
@@ -48,17 +62,24 @@ exports[`loader should transpile files with malformed imports 1`] = `
 "
 
 function joinDocuments(...documents) {
+  var definitions, i, k;
+  definitions = [];
+
+  for (i = 0; i < documents.length; i++) {
+    for (k = 0; k < documents[i].definitions.length; k++) {
+      if (!definitions.some(def => def === documents[i].definitions[k])) {
+        definitions.push(documents[i].definitions[k]);
+      }
+    }
+  }
+
   return {
     kind: 'Document',
-    definitions: documents.map(function (doc) {
-      return doc.definitions;
-    }).reduce(function (acc, curr) {
-      return acc.concat(curr);
-    }, [])
+    definitions
   };
 }
 
-var TransferShortListQuery = joinDocuments(TransferShortListListFragment, TransferShortListUserFragment, {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"OperationDefinition\\",\\"operation\\":\\"query\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"TransferShortList\\",\\"loc\\":{\\"start\\":66,\\"end\\":83}},\\"variableDefinitions\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"transferChecklist\\",\\"loc\\":{\\"start\\":88,\\"end\\":105}},\\"arguments\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"FragmentSpread\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"TransferShortListList\\",\\"loc\\":{\\"start\\":115,\\"end\\":136}},\\"directives\\":[],\\"loc\\":{\\"start\\":112,\\"end\\":136}}],\\"loc\\":{\\"start\\":106,\\"end\\":140}},\\"loc\\":{\\"start\\":88,\\"end\\":140}},{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"me\\",\\"loc\\":{\\"start\\":143,\\"end\\":145}},\\"arguments\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"FragmentSpread\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"TransferShortListUser\\",\\"loc\\":{\\"start\\":155,\\"end\\":176}},\\"directives\\":[],\\"loc\\":{\\"start\\":152,\\"end\\":176}}],\\"loc\\":{\\"start\\":146,\\"end\\":180}},\\"loc\\":{\\"start\\":143,\\"end\\":180}}],\\"loc\\":{\\"start\\":84,\\"end\\":182}},\\"loc\\":{\\"start\\":60,\\"end\\":182}}]});
+var TransferShortListQuery = joinDocuments(TransferShortListListFragment, TransferShortListUserFragment, {\\"kind\\":\\"Document\\",\\"definitions\\":[{\\"kind\\":\\"OperationDefinition\\",\\"operation\\":\\"query\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"TransferShortList\\",\\"loc\\":{\\"start\\":66,\\"end\\":83}},\\"variableDefinitions\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"transferChecklist\\",\\"loc\\":{\\"start\\":88,\\"end\\":105}},\\"arguments\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"FragmentSpread\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"TransferShortListList\\",\\"loc\\":{\\"start\\":115,\\"end\\":136}},\\"directives\\":[],\\"loc\\":{\\"start\\":112,\\"end\\":136}}],\\"loc\\":{\\"start\\":106,\\"end\\":140}},\\"loc\\":{\\"start\\":88,\\"end\\":140}},{\\"kind\\":\\"Field\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"me\\",\\"loc\\":{\\"start\\":143,\\"end\\":145}},\\"arguments\\":[],\\"directives\\":[],\\"selectionSet\\":{\\"kind\\":\\"SelectionSet\\",\\"selections\\":[{\\"kind\\":\\"FragmentSpread\\",\\"name\\":{\\"kind\\":\\"Name\\",\\"value\\":\\"TransferShortListUser\\",\\"loc\\":{\\"start\\":155,\\"end\\":176}},\\"directives\\":[],\\"loc\\":{\\"start\\":152,\\"end\\":176}}],\\"loc\\":{\\"start\\":146,\\"end\\":180}},\\"loc\\":{\\"start\\":143,\\"end\\":180}}],\\"loc\\":{\\"start\\":84,\\"end\\":182}},\\"loc\\":{\\"start\\":60,\\"end\\":182}}]});;
 
 export { TransferShortListQuery };
 "
@@ -68,13 +89,20 @@ exports[`loader should transpile files with mutations 1`] = `
 "
 
 function joinDocuments(...documents) {
+  var definitions, i, k;
+  definitions = [];
+
+  for (i = 0; i < documents.length; i++) {
+    for (k = 0; k < documents[i].definitions.length; k++) {
+      if (!definitions.some(def => def === documents[i].definitions[k])) {
+        definitions.push(documents[i].definitions[k]);
+      }
+    }
+  }
+
   return {
     kind: 'Document',
-    definitions: documents.map(function (doc) {
-      return doc.definitions;
-    }).reduce(function (acc, curr) {
-      return acc.concat(curr);
-    }, [])
+    definitions
   };
 }
 

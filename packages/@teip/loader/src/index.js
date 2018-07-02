@@ -51,7 +51,7 @@ export default function teipLoader(source: string) {
     const stringifiedOperation = JSON.stringify(doc);
     let operation = stringifiedOperation;
     if (references.length > 0) {
-      operation = `var ${name} = joinDocuments(${references.join(', ')}, ${stringifiedOperation});`;
+      operation = `joinDocuments(${references.join(', ')}, ${stringifiedOperation});`;
     }
     if (options.esModules) {
       return `var ${name} = ${operation};
