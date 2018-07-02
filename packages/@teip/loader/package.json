@@ -1,7 +1,7 @@
 {
   "name": "@teip/loader",
   "description": "A webpack loader for GraphQL files",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "bin/index.js",
   "repository": "https://github.com/hendrikniemann/teip/tree/master/packages/%40teip/loader",
   "author": "hendrikniemann",
@@ -36,5 +36,8 @@
   "scripts": {
     "build": "babel src/ --out-dir bin --ignore __test__",
     "prepublish": "npm run build"
+  },
+  "dependencies": {
+    "loader-utils": "^1.1.0"
   }
 }
