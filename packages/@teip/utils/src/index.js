@@ -44,13 +44,15 @@ export function importToImportInfo(line: string): ImportInfo {
     throw new Error('Line passed as the argument does not match the import regex');
   }
   const names = [match[2]];
-  names.unshift(
-    ...match[1]
-      .trim()
-      .substr(0, match[1].trim().length - 1)
-      .split(',')
-      .map(str => str.trim()),
-  );
+  if (match[1] !== '') {
+    names.unshift(
+      ...match[1]
+        .trim()
+        .substr(0, match[1].trim().length - 1)
+        .split(',')
+        .map(str => str.trim()),
+    );
+  }
   return {
     path: match[3].substring(1, match[3].length - 1),
     names,
