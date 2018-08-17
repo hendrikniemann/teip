@@ -1,20 +1,30 @@
 /* @flow */
 import { parse } from 'graphql';
 import * as loaderUtils from 'loader-utils';
-import { importRegex, transformImport, joinDocuments, findFragmentReferences } from './util';
+import {
+  transformToImport,
+  transformToRequire,
+  joinDocuments,
+  findFragmentReferences,
+} from './util';
+import { isImport } from '@teip/utils';
 
 const defaultOptions = { esModules: true };
 
 export default function teipLoader(source: string) {
   // Option parsing
   const options = Object.assign({}, defaultOptions, loaderUtils.getOptions(this));
-  console.log(options);
 
   const lines = source.split('\n');
-  const lastImport = lines.findIndex(line => !line.match(importRegex));
+  const lastImport = lines.findIndex(line => !isImport(line));
   const imports = lines.slice(0, lastImport);
   const body = lines.slice(lastImport);
-  const transformedImports = imports.map(transformImport);
+  const transformedImports = imports.map(line => {
+    if (options.esModules) {
+      return transformToImport(line);
+    }
+    return transformToRequire(line);
+  });
 
   const { definitions } = parse(source);
 
@@ -58,7 +68,9 @@ export default function teipLoader(source: string) {
 
 export { ${name} };`;
     }
-    return `exports.${name} = ${operation}`;
+    return `var ${name} = ${operation};
+
+exports.${name} = ${name};`;
   });
 
   return `${transformedImports.join('\n')}

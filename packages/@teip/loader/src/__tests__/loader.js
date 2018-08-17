@@ -2,16 +2,14 @@
 import { parse } from 'graphql';
 import loader from '../';
 
-function createCompiler(callback: Function) {
+function createCompiler(callback: Function, query: Object | string = {}) {
   return {
+    query,
     async: jest.fn(() => callback),
   };
 }
 
 describe('loader', () => {
-  var compiler;
-  var callback;
-
   it('should compile a simple file', () => {
     const source = `# import { Test } from './test.graphql'
 
@@ -75,5 +73,21 @@ query TransferShortList {
     const compiler = createCompiler(() => {});
     const result = loader.call(compiler, source);
     expect(result).toMatchSnapshot();
+  });
+
+  it('should compile with option "esModules" set to false', () => {
+    const source = `# import { Test } from './test.graphql'
+
+query Hello {
+  world {
+    ...Test
+  }
+}
+`;
+    const compiler = createCompiler(() => {}, { esModules: false });
+    const result = loader.call(compiler, source);
+    expect(result).toContain('var HelloQuery =');
+    expect(result).toContain('exports.HelloQuery = HelloQuery;');
+    expect(result).toContain("require('./test.graphql')");
   });
 });

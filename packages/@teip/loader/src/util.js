@@ -1,24 +1,17 @@
 /* @flow */
 import { type DocumentNode, type FragmentSpreadNode, type DefinitionNode, visit } from 'graphql';
+import { isImport, importToImportInfo } from '@teip/utils';
 
-export const importRegex = /^#\s*import\s*{\s*((?:[_A-Za-z][_0-9A-Za-z]*\s*,\s*)*)([_A-Za-z][_0-9A-Za-z]*)\s*}\s*from\s*("[^"]+"|'[^']+')\s*$/;
+export function transformToImport(imp: string): string {
+  const { names, path } = importToImportInfo(imp);
+  const importedIdentifiers = names.map(name => name + 'Fragment').join(', ');
+  return 'import { ' + importedIdentifiers + " } from '" + path + "';";
+}
 
-export function transformImport(imp: string): string {
-  const matches = imp.match(importRegex);
-  if (!matches) {
-    throw new Error(`The provided import does not match an import statement!`);
-  }
-  const source = matches[3];
-  const imports: string[] = [matches[2]];
-  if (matches[1]) {
-    const identifiers = matches[1]
-      .trim()
-      .substr(0, matches[1].trim().length - 1)
-      .split(',');
-    imports.unshift(...identifiers.map(str => str.trim()));
-  }
-  const importedIdentifiers = imports.map(imp => imp + 'Fragment').join(', ');
-  return 'import { ' + importedIdentifiers + ' } from ' + source + ';';
+export function transformToRequire(imp: string): string {
+  const { names, path } = importToImportInfo(imp);
+  const importedIdentifiers = names.map(name => name + 'Fragment').join(', ');
+  return 'const { ' + importedIdentifiers + " } = require('" + path + "');";
 }
 
 export function joinDocuments(...documents: Object[]) {
