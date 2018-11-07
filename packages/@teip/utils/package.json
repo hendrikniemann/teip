@@ -12,14 +12,14 @@
     "prepublish": "npm run build"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.36",
-    "@babel/core": "^7.0.0-beta.36",
-    "@babel/preset-env": "^7.0.0-beta.36",
-    "@babel/preset-flow": "^7.0.0-beta.40",
+    "@babel/cli": "^7.1.5",
+    "@babel/core": "^7.1.5",
+    "@babel/preset-env": "^7.1.5",
+    "@babel/preset-flow": "^7.0.0",
     "babel-core": "^7.0.0-bridge.0",
-    "babel-jest": "^23.2.0",
-    "flow-bin": "0.73",
-    "jest": "^23.3.0"
+    "babel-jest": "^23.6.0",
+    "flow-bin": "0.85.0",
+    "jest": "^23.6.0"
   },
   "peerDependencies": {
     "graphql": "^0.13.2"

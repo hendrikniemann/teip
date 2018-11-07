@@ -1,6 +1,12 @@
 [ignore]
 .*/bin/
 
+[untyped]
+.*/node_modules/@babel/types/.*
+
+[declarations]
+.*/node_modules/graphql/.*
+
 [include]
 
 [libs]
@@ -8,5 +14,4 @@
 [lints]
 
 [options]
-module.system.node.resolve_dirname=node_modules
-module.system.node.resolve_dirname=../../
+module.name_mapper='^@teip/\(.*\)$' -> '<PROJECT_ROOT>/packages/@teip/\1/src/index.js'

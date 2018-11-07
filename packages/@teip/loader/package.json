@@ -8,14 +8,14 @@
   "license": "MIT",
   "private": false,
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.44",
-    "@babel/core": "^7.0.0-beta.44",
-    "@babel/preset-env": "^7.0.0-beta.44",
-    "@babel/preset-flow": "^7.0.0-beta.44",
-    "babel-jest": "^22.4.3",
-    "flow-bin": "^0.69.0",
+    "@babel/cli": "^7.1.5",
+    "@babel/core": "^7.1.5",
+    "@babel/preset-env": "^7.1.5",
+    "@babel/preset-flow": "^7.0.0",
+    "babel-jest": "^23.6.0",
+    "flow-bin": "^0.85.0",
     "flow-typed": "^2.4.0",
-    "jest": "^22.4.3"
+    "jest": "^23.6.0"
   },
   "peerDependencies": {
     "graphql": "^0.13.2"
@@ -38,7 +38,7 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
-    "@teip/utils": "^0.1.0",
+    "@teip/utils": "0.1.1",
     "loader-utils": "^1.1.0"
   }
 }
