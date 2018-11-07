@@ -3,7 +3,7 @@ import * as G from 'graphql';
 import * as T from '@babel/types';
 import flatten from 'lodash.flatten';
 import { resolveFragmentName } from '@teip/wald';
-import { definitionToVariableName } from '@teip/utils';
+import { definitionToVariableName, definitionToTypeName } from '@teip/utils';
 import {
   getOperationDefinitionNodeType,
   getFieldNodeType,
@@ -279,22 +279,12 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
 
   function operationDefinitionToTypeDefinition(node: G.OperationDefinitionNode) {
     const type = getOperationDefinitionNodeType(schema, node);
-    if (node.operation === 'query') {
-      const id = node.name ? `${node.name.value}QueryType` : 'QueryType';
-      return T.typeAlias(
-        T.identifier(id),
-        undefined,
-        objectSelectionSetToTypeDefinition(type, node.selectionSet, entryFile),
-      );
-    } else if (node.operation === 'mutation') {
-      const id = node.name ? `${node.name.value}MutationType` : 'MutationType';
-      return T.typeAlias(
-        T.identifier(id),
-        undefined,
-        objectSelectionSetToTypeDefinition(type, node.selectionSet, entryFile),
-      );
-    }
-    throw new Error(`Operation ${node.operation} not supported`);
+    const id = definitionToTypeName(node);
+    return T.typeAlias(
+      T.identifier(id),
+      undefined,
+      objectSelectionSetToTypeDefinition(type, node.selectionSet, entryFile),
+    );
   }
 
   function definitionToTypeDefinition(node: G.DefinitionNode, file: string) {
@@ -320,7 +310,7 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
   );
 
   const exportStatments = fileTree.definitions.map((definition: G.DefinitionNode) => {
-    let name = definitionToVariableName(definition);
+    const name = definitionToVariableName(definition);
 
     const id = T.identifier(name);
     Object.assign(id, {
