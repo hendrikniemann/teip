@@ -53,7 +53,7 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
     const union = type.getTypes();
     const selections: Array<BabelAST[] | BabelAST> = node.selections.map(selection => {
       // __typename is the only direct field selection allowed on unions and included by default
-      if (selection.kind === G.Kind.FIELD && selection === '__typename') {
+      if (selection.kind === G.Kind.FIELD && selection.name.value === '__typename') {
         return [];
       }
       if (selection.kind !== G.Kind.INLINE_FRAGMENT || !selection.typeCondition) {
@@ -83,34 +83,50 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
     node: G.SelectionSetNode,
     file: string,
   ) {
-    const inlineFragments = node.selections
-      .filter(selection => selection.kind === G.Kind.INLINE_FRAGMENT)
-      .map((selection: G.InlineFragmentNode) => {
-        const conditionTypeName: string = selection.typeCondition.name.value;
-        const conditionType: ?G.GraphQLObjectType = schema.getType(conditionTypeName);
-        if (!conditionType) {
-          throw new Error(`Type ${conditionTypeName} does not exist in schema.`);
-        }
+    // We separate the inline fragments from all other selections. Inline fragments offering type
+    // refinements and we will have to create a type union in flow later.
+    const inlineFragments: G.InlineFragmentNode[] = [];
+    const nonInlineFragments: (G.FieldNode | G.FragmentSpreadNode)[] = [];
+    node.selections.forEach(selection => {
+      if (selection.kind === G.Kind.INLINE_FRAGMENT) {
+        inlineFragments.push(selection);
+      } else {
+        nonInlineFragments.push(selection);
+      }
+    });
+
+    const inlineFragmentTypes = inlineFragments.map((selection: G.InlineFragmentNode) => {
+      if (!selection.typeCondition) {
+        throw new Error('Inline fragments without type condition are currently not supported.');
+      }
+      const conditionTypeName: string = selection.typeCondition.name.value;
+      const conditionType = schema.getType(conditionTypeName);
+      if (!conditionType) {
+        throw new Error(`Type condition type ${conditionTypeName} does not exist in schema.`);
+      }
+      if (conditionType instanceof G.GraphQLObjectType) {
         if (!conditionType.getInterfaces().includes(type)) {
           throw new Error(`Type ${conditionTypeName} does not implement interface ${parent.name}.`);
         }
-
         return objectSelectionSetToTypeDefinition(conditionType, selection.selectionSet, file);
-      });
+      }
+      throw new Error(
+        `Type condition type ${conditionTypeName} exists in schema but is not object type.`,
+      );
+    });
 
-    const x = objectSelectionSetToTypeDefinition(
-      type,
-      {
-        selections: node.selections.filter(selection => selection.kind !== G.Kind.INLINE_FRAGMENT),
-      },
-      file,
-    );
+    // $FlowFixMe TODO: this is a dirty hack right now to make interfaces work
+    const x = objectSelectionSetToTypeDefinition(type, { selections: nonInlineFragments }, file);
 
-    if (inlineFragments.length === 0) {
+    // This is the case where there are no inline fragments with type refinements and we can simply
+    // return a single object type definition.
+    if (inlineFragmentTypes.length === 0) {
       return x;
     }
 
-    return T.unionTypeAnnotation(inlineFragments.map(fragment => mergeObjectTypes(fragment, x)));
+    return T.unionTypeAnnotation(
+      inlineFragmentTypes.map(fragment => mergeObjectTypes(fragment, x)),
+    );
   }
 
   function objectSelectionSetToTypeDefinition(

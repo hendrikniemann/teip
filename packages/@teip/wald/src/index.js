@@ -109,9 +109,9 @@ export function resolveFragmentName(
   name: string,
   file: string,
 ): { definition: FragmentDefinitionNode, file: string } {
-  const res = resolveName(pathMap, name, file);
-  if (res.definition.kind === 'FragmentDefinition') {
-    return res;
+  const { definition, ...rest } = resolveName(pathMap, name, file);
+  if (definition.kind === 'FragmentDefinition') {
+    return { definition, ...rest };
   }
   throw new Error('Found name "${name}" in file but it was not a fragment definition');
 }
