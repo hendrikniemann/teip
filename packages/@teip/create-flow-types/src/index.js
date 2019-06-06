@@ -52,12 +52,22 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
   ) {
     const union = type.getTypes();
     const selections: Array<BabelAST[] | BabelAST> = node.selections.map(selection => {
-      // __typename is the only direct field selection allowed on unions and included by default
-      if (selection.kind === G.Kind.FIELD && selection.name.value === '__typename') {
-        return [];
+      if (selection.kind === G.Kind.FIELD) {
+        // __typename is the only direct field selection allowed on unions and included by default
+        if (selection.name.value === '__typename') {
+          return [];
+        }
+        // No other fields are allowed therefore we throw an error here.
+        throw new Error('The only field selection allowed on a union type is `__typename`!');
       }
-      if (selection.kind !== G.Kind.INLINE_FRAGMENT || !selection.typeCondition) {
-        throw new Error(`Union type selections must be inline fragment with type condition!`);
+      if (selection.kind === G.Kind.FRAGMENT_SPREAD) {
+        const fragment = resolveFragmentName(pathMap, selection.name.value, file);
+        const fragmentType = fragmentDefinitionToTypeDefinition(fragment.definition, fragment.file);
+        return fragmentType.right.types;
+      }
+
+      if (!selection.typeCondition) {
+        throw new Error('Inline fragments in union type subselections need a type condition!');
       }
 
       const conditionTypeName: string = selection.typeCondition.name.value;
@@ -66,7 +76,7 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
       );
 
       if (!conditionType) {
-        throw new Error(`Type ${conditionTypeName} not found in union type ${parent.name}`);
+        throw new Error(`Type ${conditionTypeName} not found in union type ${type.name}`);
       }
 
       return objectSelectionSetToTypeDefinition(conditionType, selection.selectionSet, file);
