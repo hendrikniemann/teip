@@ -20,7 +20,10 @@
     "@babel/core": "^7.1.5",
     "@babel/preset-env": "^7.1.5",
     "@babel/preset-flow": "^7.0.0",
-    "flow-bin": "^0.85.0"
+    "flow-bin": "^0.112.0"
+  },
+  "peerDependencies": {
+    "graphql": "^14.0.1"
   },
   "babel": {
     "presets": [
@@ -34,8 +37,5 @@
       ],
       "@babel/preset-flow"
     ]
-  },
-  "peerDependencies": {
-    "graphql": "^14.0.1"
   }
 }

@@ -1,5 +1,5 @@
-// flow-typed signature: 9a1fb3feac221b50aab621209bf8ca9c
-// flow-typed version: 94e9f7e0a4/commander_v2.x.x/flow_>=v0.28.x
+// flow-typed signature: 2b488069a3e53862328dd928f46357a8
+// flow-typed version: c6154227d1/commander_v2.x.x/flow_>=v0.104.x
 
 declare module "commander" {
   declare class Command extends events$EventEmitter {
@@ -63,7 +63,11 @@ declare module "commander" {
     command(
       name: string,
       desc?: string,
-      opts?: { isDefault: boolean, noHelp: boolean }
+      opts?: {
+       isDefault: boolean,
+       noHelp: boolean,
+       ...
+      }
     ): Command;
 
     /**
@@ -162,7 +166,12 @@ declare module "commander" {
      * @return {Command} for chaining
      * @api public
      */
-    parse(argv: Array<string>): this;
+    parse(argv: Array<string>): this & {
+     [string]: any,
+     args: Array<string>,
+     rawArgs: Array<string>,
+     ...
+    };
 
     /**
      * Parse options from `argv` returning `argv`
@@ -172,7 +181,11 @@ declare module "commander" {
      * @return {Array}
      * @api public
      */
-    parseOptions(argv: Array<string>): { args: Array<string>, unknown: Array<string> };
+    parseOptions(argv: Array<string>): {
+     args: Array<string>,
+     unknown: Array<string>,
+     ...
+    };
 
     /**
      * Define argument syntax for the top-level command.
@@ -187,7 +200,7 @@ declare module "commander" {
      * @return {Object}
      * @api public
      */
-    opts(): { [key: string]: any };
+    opts(): { [key: string]: any, ... };
 
     /**
      * Set the program version to `str`.
@@ -246,7 +259,7 @@ declare module "commander" {
      *
      * @api public
      */
-    outputHelp(): void;
+    outputHelp(cb?: ?(defaultHelp: string) => string): void;
 
     /**
      * Output help information and exit.
@@ -275,7 +288,8 @@ declare module "commander" {
   }
 
   declare module.exports: Command & {
-    Command: Command,
-    Option: Option
+   Command: (name?: string) => Command,
+   Options: (flags: string, description?: string) => Option,
+   ...
   };
 }

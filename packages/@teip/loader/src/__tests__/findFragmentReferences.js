@@ -2,10 +2,6 @@
 import { parse } from 'graphql';
 import { findFragmentReferences } from '../util';
 
-declare var describe: Function;
-declare var it: Function;
-declare var expect: Function;
-
 const UserFragment = parse(`
   fragment UserFragment on User {
     picture {

@@ -15,16 +15,16 @@ type DefinitionNode = FragmentDefinitionNode | OperationDefinitionNode;
 
 const readFile = promisify(fs.readFile);
 
-export type WaldImport = {
+export type WaldImport = {|
   filePath: string,
   name: string,
-};
+|};
 
-type WaldFile = {
+type WaldFile = {|
   filePath: string,
   references: WaldImport[],
   definitions: DefinitionNode[],
-};
+|};
 
 type PathMap = Map<string, WaldFile | 'pending'>;
 
@@ -81,7 +81,7 @@ export function resolveName(
   pathMap: PathMap,
   name: string,
   file: string,
-): { definition: DefinitionNode, file: string } {
+): {| definition: DefinitionNode, file: string |} {
   const fileTree = pathMap.get(file);
   if (!fileTree) {
     throw new Error(`File "${file}" could not be found in the pathMap`);
@@ -108,7 +108,7 @@ export function resolveFragmentName(
   pathMap: PathMap,
   name: string,
   file: string,
-): { definition: FragmentDefinitionNode, file: string } {
+): {| definition: FragmentDefinitionNode, file: string |} {
   const { definition, ...rest } = resolveName(pathMap, name, file);
   if (definition.kind === 'FragmentDefinition') {
     return { definition, ...rest };

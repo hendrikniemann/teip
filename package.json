@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "flow-mono-cli": "^1.3.0",
-    "lerna": "^2.5.1"
+    "lerna": "^3.17.0"
   },
   "dependencies": {
     "prettier": "^1.14.3"
@@ -9,5 +9,6 @@
   "workspaces": [
     "packages/@teip/*"
   ],
-  "private": true
+  "private": true,
+  "name": "teip"
 }

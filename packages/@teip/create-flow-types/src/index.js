@@ -55,7 +55,7 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
       if (selection.kind === G.Kind.FIELD) {
         // __typename is the only direct field selection allowed on unions and included by default
         if (selection.name.value === '__typename') {
-          return [];
+          return ([]: Array<BabelAST>);
         }
         // No other fields are allowed therefore we throw an error here.
         throw new Error('The only field selection allowed on a union type is `__typename`!');
