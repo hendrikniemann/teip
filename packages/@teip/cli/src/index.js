@@ -30,7 +30,21 @@ commander
     const files = glob.sync(pattern);
     const globalConfig = getGraphQLConfig(process.cwd());
     const pathMap = new Map();
-    await Promise.all(files.map(file => fillMap(file, pathMap)));
+    try {
+      await Promise.all(
+        files.map(async file => {
+          try {
+            await fillMap(file, pathMap);
+          } catch (error) {
+            console.error(error);
+            return Promise.reject('Reading file ' + file + ' failed!');
+          }
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+      return;
+    }
     const writtenFiles = files.forEach(file => {
       const config = globalConfig.getConfigForFile(file);
       if (config.schemaPath !== path.resolve(file)) {
