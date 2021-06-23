@@ -29,7 +29,7 @@ export function definitionToTypeName(definition: DefinitionNode): string {
   return definitionToVariableName(definition) + 'Type';
 }
 
-export const importRegex = /^#\s*import\s*{\s*((?:[_A-Za-z][_0-9A-Za-z]*\s*,\s*)*)([_A-Za-z][_0-9A-Za-z]*)\s*}\s*from\s*("[^"]+"|'[^']+')\s*$/;
+export const importRegex = /^#\s*import\s+((?:[_A-Za-z][_0-9A-Za-z]*\s*,\s*)*)([_A-Za-z][_0-9A-Za-z]*)\s+from\s*("[^"]+"|'[^']+')\s*$/;
 
 export const isImport = (str: string): boolean => importRegex.test(str);
 
