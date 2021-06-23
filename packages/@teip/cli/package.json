@@ -1,6 +1,6 @@
 {
   "name": "@teip/cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Command line interface for teip",
   "main": "bin/index.js",
   "repository": "https://github.com/hendrikniemann/teip/tree/master/packages/cli",
@@ -8,7 +8,8 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "build": "babel src --out-dir bin"
+    "build": "babel src --out-dir bin",
+    "prepublish": "npm run build"
   },
   "bin": {
     "teip": "./bin/index.js"
