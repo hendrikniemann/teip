@@ -1,6 +1,6 @@
 {
   "name": "@teip/create-flow-types",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "main": "bin/index.js",
   "author": "hendrikniemann <hendrik.niemann@kiron.ngo>",
   "license": "MIT",
@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@babel/types": "^7.1.5",
-    "@teip/utils": "^0.1.0",
-    "@teip/wald": "^0.1.0",
+    "@teip/utils": "^0.2.0",
+    "@teip/wald": "^0.2.0",
     "lodash.flatten": "^4.4.0"
   },
   "devDependencies": {
