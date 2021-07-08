@@ -273,8 +273,8 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
       throw new Error('`fieldToTypeAnnotation` cannot be called with "__typename".');
     }
     const gqlType: G.GraphQLType = getFieldNodeType(parent, node);
-    if (gqlType instanceof G.GraphQLInputObjectType || gqlType instanceof G.GraphQLInterfaceType) {
-      throw new Error('Interfaces and inputs not supported!');
+    if (gqlType instanceof G.GraphQLInputObjectType) {
+      throw new Error('inputs are not supported!');
     }
     const name = node.alias || node.name;
     return T.objectTypeProperty(
