@@ -57,6 +57,7 @@ commander
           const generated = HEADER + babelGenerator(createTypes(file, schema, pathMap)).code + '\n';
           fs.writeFileSync(path.resolve(process.cwd(), `${file}.flow`), generated);
         } catch (error) {
+          console.error(`\n\n==> Error in file: ${file}`);
           console.log(error);
         }
       }
