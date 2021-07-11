@@ -90,8 +90,7 @@ export function mergeObjectTypes(
       propertyMap.set(property.key.name, property);
     }
   });
-  //const unnestedTypes = unnestUnionTypes(types);
-  //const unnestedTypes = types;
+
   const unionTypes = types.filter(type => type.type === 'UnionTypeAnnotation');
   if (unionTypes.length > 0) {
     const unionTypeMap: Map<string, BabelNodeObjectTypeAnnotation[]> = new Map();
