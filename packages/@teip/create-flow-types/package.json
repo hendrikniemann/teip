@@ -1,6 +1,6 @@
 {
   "name": "@teip/create-flow-types",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "main": "bin/index.js",
   "author": "hendrikniemann <hendrik.niemann@kiron.ngo>",
   "license": "MIT",
