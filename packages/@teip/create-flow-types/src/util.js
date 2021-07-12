@@ -1,7 +1,6 @@
 /* @flow */
 import * as T from '@babel/types';
 import flatten from 'lodash.flatten';
-
 /*::
 // Hack to extract the Babel internal types
 const tOTP = T.objectTypeProperty(T.identifier('str'), T.nullLiteralTypeAnnotation());
@@ -31,7 +30,10 @@ const isReadOnlyArrayOfObjectAnnotation = node =>
 export function mergeObjectTypes(
   ...types: BabelNodeObjectTypeAnnotation[]
 ): BabelNodeObjectTypeAnnotation {
-  const properties: BabelNodeObjectTypeProperty[] = flatten(types.map(type => type.properties));
+  const properties: BabelNodeObjectTypeProperty[] = flatten(
+    //Union types do not have properties so return empty array for them here
+    types.map(type => (type.properties ? type.properties : [])),
+  );
   const propertyMap: Map<string, BabelNodeObjectTypeProperty> = new Map();
   properties.forEach(property => {
     // If the property already exists we need to merge here
@@ -88,5 +90,26 @@ export function mergeObjectTypes(
       propertyMap.set(property.key.name, property);
     }
   });
-  return T.objectTypeAnnotation([...propertyMap.values()]);
+
+  const unionTypes = types.filter(type => type.type === 'UnionTypeAnnotation');
+  if (unionTypes.length > 0) {
+    const unionTypeMap: Map<string, BabelNodeObjectTypeAnnotation[]> = new Map();
+    unionTypes.forEach(unionType => {
+      unionType.types.forEach(type => {
+        const typename = type.properties.find(prop => prop.key.name === '__typename').value.value;
+        if (unionTypeMap.has(typename)) {
+          unionTypeMap.set(typename, mergeObjectTypes(unionTypeMap.get(typename), type));
+        } else {
+          unionTypeMap.set(typename, type);
+        }
+      });
+    });
+    return T.unionTypeAnnotation(
+      [...unionTypeMap.values()].map(unionType =>
+        mergeObjectTypes(unionType, { properties: [...propertyMap.values()] }),
+      ),
+    );
+  } else {
+    return T.objectTypeAnnotation([...propertyMap.values()]);
+  }
 }
