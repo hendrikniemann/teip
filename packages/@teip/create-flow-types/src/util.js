@@ -90,12 +90,13 @@ export function mergeObjectTypes(
       propertyMap.set(property.key.name, property);
     }
   });
-
+  
   const unionTypes = types.filter(type => type.type === 'UnionTypeAnnotation');
   if (unionTypes.length > 0) {
     const unionTypeMap: Map<string, BabelNodeObjectTypeAnnotation[]> = new Map();
     unionTypes.forEach(unionType => {
-      unionType.types.forEach(type => {
+      const types = flatten(unionType.types.map(type => (type.types ? type.types : [type])));
+      types.forEach(type => {
         const typename = type.properties.find(prop => prop.key.name === '__typename').value.value;
         if (unionTypeMap.has(typename)) {
           unionTypeMap.set(typename, mergeObjectTypes(unionTypeMap.get(typename), type));

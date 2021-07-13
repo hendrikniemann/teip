@@ -134,8 +134,12 @@ export function createTypes(entryFile: string, schema: G.GraphQLSchema, pathMap:
       return x;
     }
 
-    return T.unionTypeAnnotation(
-      inlineFragmentTypes.map(fragment => mergeObjectTypes(fragment, x)),
+    return mergeObjectTypes(
+      ...inlineFragmentTypes.map(inlineFragmentType => ({
+        type: 'UnionTypeAnnotation',
+        types: [inlineFragmentType],
+      })),
+      x,
     );
   }
 
