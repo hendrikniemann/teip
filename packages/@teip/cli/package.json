@@ -1,6 +1,6 @@
 {
   "name": "@teip/cli",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Command line interface for teip",
   "main": "bin/index.js",
   "repository": "https://github.com/hendrikniemann/teip/tree/master/packages/cli",
